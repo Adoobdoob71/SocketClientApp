@@ -21,10 +21,18 @@ public class ClientThread extends Thread {
     private UserSocket user;
     private static Socket socket;
     private Context context;
+    public static BufferedReader input;
+    public static PrintWriter output;
     public ClientThread(UserSocket user, Socket socket, Context context){
         this.user = user;
         ClientThread.socket = socket;
         this.context = context;
+        try {
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new PrintWriter(socket.getOutputStream(), true);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public UserSocket getUser() {
@@ -36,12 +44,10 @@ public class ClientThread extends Thread {
     }
 
     public void sendChoiceToServer(String key) throws IOException{
-        PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
         output.println(key);
     }
 
     public void handleInputFromServer() throws IOException{
-        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String nickname = input.readLine();
         Intent intent = new Intent(context, Chat.class);
         context.startActivity(intent);
